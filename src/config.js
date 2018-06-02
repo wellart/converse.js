@@ -12,7 +12,7 @@ if (typeof(require) === 'undefined') {
     };
 }
 
-require.config({
+window.config = {
     baseUrl: '.',
     paths: {
         "IPv6":                     "node_modules/urijs/src/IPv6",

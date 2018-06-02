@@ -75,6 +75,18 @@ const config = {
             path.resolve(__dirname, "src"),
         ],
         alias: {
+            "jquery":                   path.resolve(__dirname, "node_modules/jquery/dist/jquery"),
+            "mock":                     path.resolve(__dirname, "tests/mock"),
+            "wait-until-promise":       path.resolve(__dirname, "node_modules/wait-until-promise/index"),
+            "test-utils":               path.resolve(__dirname, "tests/utils"),
+            "sinon":                    path.resolve(__dirname, "node_modules/sinon/pkg/sinon"),
+            "transcripts":              path.resolve(__dirname, "converse-logs/converse-logs"),
+            "jasmine-core":             path.resolve(__dirname, "node_modules/jasmine-core/lib/jasmine-core/jasmine"),
+            "jasmine":                  path.resolve(__dirname, "node_modules/jasmine-core/lib/jasmine-core/boot"),
+            "jasmine-console":          path.resolve(__dirname, "node_modules/jasmine-core/lib/console/console"),
+            "console-reporter":         path.resolve(__dirname, "tests/console-reporter"),
+            "jasmine-html":             path.resolve(__dirname, "node_modules/jasmine-core/lib/jasmine-core/jasmine-html"),
+
             "IPv6":                     path.resolve(__dirname, "node_modules/urijs/src/IPv6"),
             "SecondLevelDomains":       path.resolve(__dirname, "node_modules/urijs/src/SecondLevelDomains"),
             "awesomplete":              path.resolve(__dirname, "node_modules/awesomplete-avoid-xss/awesomplete"),
