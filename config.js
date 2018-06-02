@@ -1,18 +1,4 @@
-var config;
-if (typeof(require) === 'undefined') {
-    /* XXX: Hack to work around r.js's stupid parsing.
-     * We want to save the configuration in a variable so that we can reuse it in
-     * tests/main.js.
-     */
-    // eslint-disable-next-line
-    require = { // jshint ignore:line
-        config: function (c) {
-            config = c;
-        }
-    };
-}
-
-require.config({
+var config = {
     baseUrl: '.',
     paths: {
         "IPv6":                     "node_modules/urijs/src/IPv6",
@@ -158,4 +144,4 @@ require.config({
             }
         }
     }
-});
+};
