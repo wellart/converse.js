@@ -245,26 +245,41 @@
                 initialize () {
                     _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
                     this.model.on('contactAdded', this.registerContactEventHandlers, this);
+                    this.model.on('change', this.render, this);
+
+                    // XXX: Leaky abstraction from converse-omemo
+                    // In part, we're hampered by the fact that we can't
+                    // have sub-views inside a VDOMView.
+                    // If we did, we could put the OMEMO part of this modal
+                    // inside another view and have it render as a sub-view.
+                    // However, for this we'd need some kind of registry and
+                    // way to look up sub-views by tag from the template (which
+                    // I assume is what for example vue.js does).
+                    this.has_omemo = _converse.pluggable.plugins['converse-omemo'].enabled();
+                    if (this.has_omemo) {
+                        const jid = this.model.get('jid');
+                        this.devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({'jid': jid});
+                        this.devicelist.devices.on('change:fingerprint', this.render, this);
+                    } else {
+                        this.devicelist = {};
+                    }
+
                     this.registerContactEventHandlers();
+                    _converse.emit('userDetailsModalInitialized', this.model);
                 },
 
                 toHTML () {
                     return tpl_user_details_modal(_.extend(
                         this.model.toJSON(),
                         this.model.vcard.toJSON(), {
+                        '_': _,
+                        '__': __,
+                        'has_omemo': this.has_omemo,
+                        'devicelist': this.devicelist, 
                         'allow_contact_removal': _converse.allow_contact_removal,
                         'alt_profile_image': __("The User's Profile Image"),
                         'display_name': this.model.getDisplayName(),
-                        'is_roster_contact': !_.isUndefined(this.model.contact),
-                        'label_close': __('Close'),
-                        'label_email': __('Email'),
-                        'label_fullname': __('Full Name'),
-                        'label_jid': __('Jabber ID'),
-                        'label_nickname': __('Nickname'),
-                        'label_remove': __('Remove as contact'),
-                        'label_refresh': __('Refresh'),
-                        'label_role': __('Role'),
-                        'label_url': __('URL')
+                        'is_roster_contact': !_.isUndefined(this.model.contact)
                     }));
                 },
 

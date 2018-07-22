@@ -396,6 +396,15 @@
                             `</publish>`+
                         `</pubsub>`+
                     `</iq>`)
+
+                spyOn(_converse, 'emit');
+                const stanza = $iq({
+                    'from': _converse.bare_jid,
+                    'id': iq_stanza.getAttribute('id'),
+                    'to': _converse.bare_jid,
+                    'type': 'result'});
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                expect(_converse.emit).toHaveBeenCalledWith('OMEMOInitialized');
                 done();
             });
         }));
@@ -494,7 +503,6 @@
                     'type': 'result'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-
                 return test_utils.waitUntil(() => {
                     return _.filter(
                         _converse.connection.IQ_stanzas,
@@ -564,6 +572,101 @@
 
                 done();
             }).catch(_.partial(console.error, _));
+        }));
+
+        it("shows OMEMO device fingerprints in the user details modal",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
+            let iq_stanza;
+            test_utils.createContacts(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            test_utils.openChatBoxFor(_converse, contact_jid);
+
+            // We simply emit, to avoid doing all the setup work
+            _converse.emit('OMEMOInitialized');
+
+            const view = _converse.chatboxviews.get(contact_jid);
+            const show_modal_button = view.el.querySelector('.show-user-details-modal');
+            show_modal_button.click();
+            const modal = view.user_details_modal;
+
+            test_utils.waitUntil(() => u.isVisible(modal.el), 1000).then(() => {
+                return test_utils.waitUntil(() => {
+                    return _.filter(
+                        _converse.connection.IQ_stanzas,
+                        (iq) => {
+                            const node = iq.nodeTree.querySelector('iq[to="'+contact_jid+'"] query[node="eu.siacs.conversations.axolotl.devicelist"]');
+                            if (node) { iq_stanza = iq.nodeTree; }
+                            return node;
+                        }).length;});
+            }).then(() => {
+                iq_stanza;
+                expect(iq_stanza.outerHTML).toBe(
+                    `<iq type="get" from="dummy@localhost" to="max.frankfurter@localhost" xmlns="jabber:client" id="${iq_stanza.getAttribute('id')}">`+
+                        `<query xmlns="http://jabber.org/protocol/disco#items" node="eu.siacs.conversations.axolotl.devicelist"/>`+
+                    `</iq>`);
+                
+                const stanza = $iq({
+                    'from': contact_jid,
+                    'id': iq_stanza.getAttribute('id'),
+                    'to': _converse.bare_jid,
+                    'type': 'result',
+                }).c('query', {
+                    'xmlns': 'http://jabber.org/protocol/disco#items',
+                    'node': 'eu.siacs.conversations.axolotl.devicelist'
+                }).c('device', {'id': '555'}).up()
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                return test_utils.waitUntil(() => u.isVisible(modal.el), 1000).then(function () {
+                    return test_utils.waitUntil(() => {
+                        return _.filter(
+                            _converse.connection.IQ_stanzas,
+                            (iq) => {
+                                const node = iq.nodeTree.querySelector('iq[to="'+contact_jid+'"] items[node="eu.siacs.conversations.axolotl.bundles:555"]');
+                                if (node) { iq_stanza = iq.nodeTree; }
+                                return node;
+                            }).length;});
+                });
+            }).then(() => {
+                expect(iq_stanza.outerHTML).toBe(
+                    `<iq type="get" from="dummy@localhost" to="max.frankfurter@localhost" xmlns="jabber:client" id="${iq_stanza.getAttribute('id')}">`+
+                        `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
+                            `<items node="eu.siacs.conversations.axolotl.bundles:555"/>`+
+                        `</pubsub>`+
+                    `</iq>`);
+
+                const stanza = $iq({
+                    'from': contact_jid,
+                    'id': iq_stanza.getAttribute('id'),
+                    'to': _converse.bare_jid,
+                    'type': 'result',
+                }).c('pubsub', {
+                    'xmlns': 'http://jabber.org/protocol/pubsub'
+                    }).c('items', {'node': "eu.siacs.conversations.axolotl.bundles:555"})
+                        .c('item')
+                            .c('bundle', {'xmlns': 'eu.siacs.conversations.axolotl'})
+                                .c('signedPreKeyPublic', {'signedPreKeyId': '4223'}).t(btoa('1111')).up()
+                                .c('signedPreKeySignature').t(btoa('2222')).up()
+                                .c('identityKey').t(btoa('3333')).up()
+                                .c('prekeys')
+                                    .c('preKeyPublic', {'preKeyId': '1'}).t(btoa('1001')).up()
+                                    .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1002')).up()
+                                    .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1003'));
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                const view = _converse.chatboxviews.get(contact_jid);
+                const modal = view.user_details_modal;
+                return test_utils.waitUntil(() => modal.el.querySelectorAll('.fingerprints .fingerprint').length);
+            }).then(() => {
+                const view = _converse.chatboxviews.get(contact_jid);
+                const modal = view.user_details_modal;
+                expect(modal.el.querySelectorAll('.fingerprints .fingerprint').length).toBe(1);
+                const el = modal.el.querySelector('.fingerprints .fingerprint');
+                expect(el.textContent).toBe('f56d6351aa71cff0debea014d13525e42036187a');
+                done();
+            });
         }));
     });
 
