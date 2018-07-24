@@ -246,24 +246,6 @@
                     _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
                     this.model.on('contactAdded', this.registerContactEventHandlers, this);
                     this.model.on('change', this.render, this);
-
-                    // XXX: Leaky abstraction from converse-omemo
-                    // In part, we're hampered by the fact that we can't
-                    // have sub-views inside a VDOMView.
-                    // If we did, we could put the OMEMO part of this modal
-                    // inside another view and have it render as a sub-view.
-                    // However, for this we'd need some kind of registry and
-                    // way to look up sub-views by tag from the template (which
-                    // I assume is what for example vue.js does).
-                    this.has_omemo = _converse.pluggable.plugins['converse-omemo'].enabled();
-                    if (this.has_omemo) {
-                        const jid = this.model.get('jid');
-                        this.devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({'jid': jid});
-                        this.devicelist.devices.on('change:fingerprint', this.render, this);
-                    } else {
-                        this.devicelist = {};
-                    }
-
                     this.registerContactEventHandlers();
                     _converse.emit('userDetailsModalInitialized', this.model);
                 },

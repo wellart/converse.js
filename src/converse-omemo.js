@@ -9,9 +9,10 @@
 (function (root, factory) {
     define([
         "converse-core",
-        "templates/toolbar_omemo.html"
+        "templates/toolbar_omemo.html",
+        "templates/omemo_fingerprints.html"
     ], factory);
-}(this, function (converse, tpl_toolbar_omemo) {
+}(this, function (converse, tpl_toolbar_omemo, tpl_omemo_fingerprints) {
 
     const { Backbone, Promise, Strophe, moment, sizzle, $iq, $msg, _, b64_sha1 } = converse.env;
     const u = converse.env.utils;
@@ -187,7 +188,8 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by Converse.js's plugin machinery.
              */
-            const { _converse } = this;
+            const { _converse } = this,
+                  { __ } = _converse;
 
             _converse.api.promises.add(['OMEMOInitialized']);
 
@@ -201,6 +203,55 @@
                             .then((fp) => {
                                 bundle['fingerprint'] = u.arrayBufferToHex(fp);
                                 device.save('bundle', bundle);
+                                resolve();
+                            }).catch(reject);
+                    });
+                });
+            }
+
+            _converse.getFingerprintsForContact = function (jid) {
+                return new Promise((resolve, reject) => {
+                    _converse.getDevicesForContact(jid)
+                        .then((devices) => Promise.all(devices.map(d => generateFingerprint(d))).then(resolve).catch(reject));
+                });
+            }
+
+            _converse.OMEMOFingerprintsView = Backbone.VDOMView.extend({
+                events: {
+                    'click .fingerprint-trust label.btn': 'toggleDeviceTrust'
+                },
+
+                initialize () {
+                    const jid = this.model.get('jid');
+                    this.devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({'jid': jid});
+                    this.devicelist.devices.on('change:bundle', () => this.model.trigger('subview-render'));
+                },
+
+                toHTML () {
+                    return tpl_omemo_fingerprints(_.extend(
+                        this.model.toJSON(), {
+                        '_': _,
+                        '__': __,
+                        'devicelist': this.devicelist
+                    }));
+                },
+
+                toggleDeviceTrust () {
+                    debugger;
+                }
+            });
+            Backbone.registerSubView('omemo_fingerprints', _converse.OMEMOFingerprintsView);
+
+
+            function generateFingerprint (device) {
+                return new Promise((resolve, reject) => {
+                    device.getBundle().then((bundle) => {
+                        // TODO: only generate fingerprints when necessary
+                        crypto.subtle.digest('SHA-1', u.base64ToArrayBuffer(bundle['identity_key']))
+                            .then((fp) => {
+                                bundle['fingerprint'] = u.arrayBufferToHex(fp);
+                                device.save('bundle', bundle);
+                                device.trigger('change:bundle'); // Doesn't get triggered automatically due to pass-by-reference
                                 resolve();
                             }).catch(reject);
                     });

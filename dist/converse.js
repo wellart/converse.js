@@ -86,6 +86,108 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "../backbone.vdomview/backbone.vdomview.js":
+/*!*************************************************!*\
+  !*** ../backbone.vdomview/backbone.vdomview.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
+
+/*!
+ * Backbone.VDOMView
+ *
+ * MIT Licensed. Copyright (c) 2017, JC Brand <jc@opkode.com>
+ */
+(function (root, factory) {
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! snabbdom */ "./node_modules/snabbdom/dist/snabbdom.js"), __webpack_require__(/*! snabbdom-attributes */ "./node_modules/snabbdom/dist/snabbdom-attributes.js"), __webpack_require__(/*! snabbdom-class */ "./node_modules/snabbdom/dist/snabbdom-class.js"), __webpack_require__(/*! snabbdom-dataset */ "./node_modules/snabbdom/dist/snabbdom-dataset.js"), __webpack_require__(/*! snabbdom-props */ "./node_modules/snabbdom/dist/snabbdom-props.js"), __webpack_require__(/*! snabbdom-style */ "./node_modules/snabbdom/dist/snabbdom-style.js"), __webpack_require__(/*! tovnode */ "./node_modules/snabbdom/dist/tovnode.js"), __webpack_require__(/*! underscore */ "./src/underscore-shim.js"), __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else {}
+})(void 0, function (snabbdom, snabbdom_attributes, snabbdom_class, snabbdom_dataset, snabbdom_props, snabbdom_style, tovnode, _, Backbone) {
+  "use strict";
+
+  let domParser = new DOMParser();
+  const patch = snabbdom.init([snabbdom_attributes.default, snabbdom_class.default, snabbdom_dataset.default, snabbdom_props.default, snabbdom_style.default]);
+  const View = _.isUndefined(Backbone.NativeView) ? Backbone.View : Backbone.NativeView;
+
+  function parseHTMLToDOM(html_str) {
+    /* Parses a string with HTML and returns a DOM element.
+     *
+     * Forked from vdom_parser:
+     *      https://github.com/bitinn/vdom-parser
+     */
+    if (typeof html_str !== 'string') {
+      throw new Error('Invalid parameter type in parseHTMLToDOM');
+    }
+
+    if (!('DOMParser' in window)) {
+      throw new Error('DOMParser is not available, ' + 'so parsing string to DOM node is not possible.');
+    }
+
+    if (!html_str) {
+      return document.createTextNode('');
+    }
+
+    domParser = domParser || new DOMParser();
+    const doc = domParser.parseFromString(html_str, 'text/html'); // most tags default to body
+
+    if (doc.body.firstChild) {
+      return doc.getElementsByTagName('body')[0].firstChild; // some tags, like script and style, default to head
+    } else if (doc.head.firstChild && (doc.head.firstChild.tagName !== 'TITLE' || doc.title)) {
+      return doc.head.firstChild; // special case for html comment, cdata, doctype
+    } else if (doc.firstChild && doc.firstChild.tagName !== 'HTML') {
+      return doc.firstChild; // other element, such as whitespace, or html/body/head tag, fallback to empty text node
+    } else {
+      return document.createTextNode('');
+    }
+  }
+
+  Backbone.VDOMView = View.extend({
+    updateEventListeners(old_vnode, new_vnode) {
+      this.setElement(new_vnode.elm);
+    },
+
+    render() {
+      if (_.isFunction(this.beforeRender)) {
+        this.beforeRender();
+      }
+
+      let new_vnode;
+
+      if (!_.isNil(this.toHTML)) {
+        new_vnode = tovnode.toVNode(parseHTMLToDOM(this.toHTML()));
+      } else {
+        new_vnode = tovnode.toVNode(this.toDOM());
+      }
+
+      new_vnode.data.hook = _.extend({
+        create: this.updateEventListeners.bind(this),
+        update: this.updateEventListeners.bind(this)
+      });
+      const el = this.vnode ? this.vnode.elm : this.el;
+
+      if (el.outerHTML !== new_vnode.elm.outerHTML) {
+        this.vnode = patch(this.vnode || this.el, new_vnode);
+      }
+
+      if (_.isFunction(this.afterRender)) {
+        this.afterRender();
+      }
+
+      return this;
+    }
+
+  });
+  return Backbone.VDOMView;
+});
+
+/***/ }),
+
 /***/ "./3rdparty/lodash.fp.js":
 /*!*******************************!*\
   !*** ./3rdparty/lodash.fp.js ***!
@@ -2465,132 +2567,6 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     });
 
     return Backbone.Overview;
-}));
-
-
-
-/***/ }),
-
-/***/ "./node_modules/backbone.vdomview/backbone.vdomview.js":
-/*!*************************************************************!*\
-  !*** ./node_modules/backbone.vdomview/backbone.vdomview.js ***!
-  \*************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*** IMPORTS FROM imports-loader ***/
-var backbone = (backbone || {});
-backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_modules/backbone.nativeview/backbone.nativeview.js");
-
-/*!
- * Backbone.VDOMView
- *
- * MIT Licensed. Copyright (c) 2017, JC Brand <jc@opkode.com>
- */
-(function (root, factory) {
-    if (true) {
-        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-            __webpack_require__(/*! snabbdom */ "./node_modules/snabbdom/dist/snabbdom.js"),
-            __webpack_require__(/*! snabbdom-attributes */ "./node_modules/snabbdom/dist/snabbdom-attributes.js"),
-            __webpack_require__(/*! snabbdom-class */ "./node_modules/snabbdom/dist/snabbdom-class.js"),
-            __webpack_require__(/*! snabbdom-dataset */ "./node_modules/snabbdom/dist/snabbdom-dataset.js"),
-            __webpack_require__(/*! snabbdom-props */ "./node_modules/snabbdom/dist/snabbdom-props.js"),
-            __webpack_require__(/*! snabbdom-style */ "./node_modules/snabbdom/dist/snabbdom-style.js"),
-            __webpack_require__(/*! tovnode */ "./node_modules/snabbdom/dist/tovnode.js"),
-            __webpack_require__(/*! underscore */ "./src/underscore-shim.js"),
-            __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js")
-        ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-    } else {}
-}(this, function (
-        snabbdom,
-        snabbdom_attributes,
-        snabbdom_class,
-        snabbdom_dataset,
-        snabbdom_props,
-        snabbdom_style,
-        tovnode,
-        _,
-        Backbone) {
-    "use strict";
-
-    let domParser = new DOMParser();
-    const patch = snabbdom.init([
-        snabbdom_attributes.default,
-        snabbdom_class.default,
-        snabbdom_dataset.default,
-        snabbdom_props.default,
-        snabbdom_style.default
-    ]);
-
-    const View = _.isUndefined(Backbone.NativeView) ? Backbone.View : Backbone.NativeView;
-
-    function parseHTMLToDOM (html_str) {
-        /* Parses a string with HTML and returns a DOM element.
-         *
-         * Forked from vdom_parser:
-         *      https://github.com/bitinn/vdom-parser
-         */
-        if (typeof html_str !== 'string') {
-            throw new Error('Invalid parameter type in parseHTMLToDOM');
-        }
-        if ( !('DOMParser' in window) ) {
-            throw new Error(
-                'DOMParser is not available, '+
-                'so parsing string to DOM node is not possible.');
-        }
-        if (!html_str) {
-            return document.createTextNode('');
-        }
-        domParser = domParser || new DOMParser();
-        const doc = domParser.parseFromString(html_str, 'text/html');
-
-        // most tags default to body
-        if (doc.body.firstChild) {
-            return doc.getElementsByTagName('body')[0].firstChild;
-
-        // some tags, like script and style, default to head
-        } else if (doc.head.firstChild && (doc.head.firstChild.tagName !== 'TITLE' || doc.title)) {
-            return doc.head.firstChild;
-
-        // special case for html comment, cdata, doctype
-        } else if (doc.firstChild && doc.firstChild.tagName !== 'HTML') {
-            return doc.firstChild;
-
-        // other element, such as whitespace, or html/body/head tag, fallback to empty text node
-        } else {
-            return document.createTextNode('');
-        }
-    }
-
-    Backbone.VDOMView = View.extend({
-
-        updateEventListeners (old_vnode, new_vnode) {
-            this.setElement(new_vnode.elm);
-        },
-
-        render () {
-            if (_.isFunction(this.beforeRender)) {
-                this.beforeRender();
-            }
-            const new_vnode = tovnode.toVNode(parseHTMLToDOM(this.toHTML()));
-            new_vnode.data.hook = _.extend({
-               create: this.updateEventListeners.bind(this),
-               update: this.updateEventListeners.bind(this)
-            });
-            const el = this.vnode ? this.vnode.elm : this.el;
-            if (el.outerHTML !== new_vnode.elm.outerHTML) {
-                this.vnode = patch(this.vnode || this.el, new_vnode);
-            }
-            if (_.isFunction(this.afterRender)) {
-                this.afterRender();
-            }
-            return this;
-        }
-    });
-    return Backbone.VDOMView;
 }));
 
 
@@ -63329,27 +63305,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
 
           this.model.on('contactAdded', this.registerContactEventHandlers, this);
-          this.model.on('change', this.render, this); // XXX: Leaky abstraction from converse-omemo
-          // In part, we're hampered by the fact that we can't
-          // have sub-views inside a VDOMView.
-          // If we did, we could put the OMEMO part of this modal
-          // inside another view and have it render as a sub-view.
-          // However, for this we'd need some kind of registry and
-          // way to look up sub-views by tag from the template (which
-          // I assume is what for example vue.js does).
-
-          this.has_omemo = _converse.pluggable.plugins['converse-omemo'].enabled();
-
-          if (this.has_omemo) {
-            const jid = this.model.get('jid');
-            this.devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({
-              'jid': jid
-            });
-            this.devicelist.devices.on('change:fingerprint', this.render, this);
-          } else {
-            this.devicelist = {};
-          }
-
+          this.model.on('change', this.render, this);
           this.registerContactEventHandlers();
 
           _converse.emit('userDetailsModalInitialized', this.model);
@@ -69307,7 +69263,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! templates/alert_modal.html */ "./src/templates/alert_modal.html"), __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js"), __webpack_require__(/*! backbone.vdomview */ "./node_modules/backbone.vdomview/backbone.vdomview.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! templates/alert_modal.html */ "./src/templates/alert_modal.html"), __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js"), __webpack_require__(/*! backbone.vdomview */ "../backbone.vdomview/backbone.vdomview.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -69324,6 +69280,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       const _converse = this._converse;
       _converse.BootstrapModal = Backbone.VDOMView.extend({
         initialize() {
+          Backbone.VDOMView.prototype.initialize.apply(this, arguments);
           this.render().insertIntoDOM();
           this.modal = new bootstrap.Modal(this.el, {
             backdrop: 'static',
@@ -71399,7 +71356,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! utils/form */ "./src/utils/form.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! converse-disco */ "./src/converse-disco.js"), __webpack_require__(/*! backbone.overview */ "./node_modules/backbone.overview/backbone.overview.js"), __webpack_require__(/*! backbone.orderedlistview */ "./node_modules/backbone.overview/backbone.orderedlistview.js"), __webpack_require__(/*! backbone.vdomview */ "./node_modules/backbone.vdomview/backbone.vdomview.js"), __webpack_require__(/*! utils/muc */ "./src/utils/muc.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! utils/form */ "./src/utils/form.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! converse-disco */ "./src/converse-disco.js"), __webpack_require__(/*! backbone.overview */ "./node_modules/backbone.overview/backbone.overview.js"), __webpack_require__(/*! backbone.orderedlistview */ "./node_modules/backbone.overview/backbone.orderedlistview.js"), __webpack_require__(/*! backbone.vdomview */ "../backbone.vdomview/backbone.vdomview.js"), __webpack_require__(/*! utils/muc */ "./src/utils/muc.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -73197,11 +73154,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /* global libsignal, ArrayBuffer, parseInt */
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! templates/toolbar_omemo.html */ "./src/templates/toolbar_omemo.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! templates/toolbar_omemo.html */ "./src/templates/toolbar_omemo.html"), __webpack_require__(/*! templates/omemo_fingerprints.html */ "./src/templates/omemo_fingerprints.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, tpl_toolbar_omemo) {
+})(void 0, function (converse, tpl_toolbar_omemo, tpl_omemo_fingerprints) {
   const _converse$env = converse.env,
         Backbone = _converse$env.Backbone,
         Promise = _converse$env.Promise,
@@ -73385,7 +73342,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       /* The initialize function gets called as soon as the plugin is
        * loaded by Converse.js's plugin machinery.
        */
-      const _converse = this._converse;
+      const _converse = this._converse,
+            __ = _converse.__;
 
       _converse.api.promises.add(['OMEMOInitialized']);
 
@@ -73398,6 +73356,55 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             crypto.subtle.digest('SHA-1', u.base64ToArrayBuffer(bundle['identity_key'])).then(fp => {
               bundle['fingerprint'] = u.arrayBufferToHex(fp);
               device.save('bundle', bundle);
+              resolve();
+            }).catch(reject);
+          });
+        });
+      }
+
+      _converse.getFingerprintsForContact = function (jid) {
+        return new Promise((resolve, reject) => {
+          _converse.getDevicesForContact(jid).then(devices => Promise.all(devices.map(d => generateFingerprint(d))).then(resolve).catch(reject));
+        });
+      };
+
+      _converse.OMEMOFingerprintsView = Backbone.VDOMView.extend({
+        events: {
+          'click .fingerprint-trust label.btn': 'toggleDeviceTrust'
+        },
+
+        initialize() {
+          const jid = this.model.get('jid');
+          this.devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({
+            'jid': jid
+          });
+          this.devicelist.devices.on('change:bundle', () => this.model.trigger('subview-render'));
+        },
+
+        toHTML() {
+          return tpl_omemo_fingerprints(_.extend(this.model.toJSON(), {
+            '_': _,
+            '__': __,
+            'devicelist': this.devicelist
+          }));
+        },
+
+        toggleDeviceTrust() {
+          debugger;
+        }
+
+      });
+      Backbone.registerSubView('omemo_fingerprints', _converse.OMEMOFingerprintsView);
+
+      function generateFingerprint(device) {
+        return new Promise((resolve, reject) => {
+          device.getBundle().then(bundle => {
+            // TODO: only generate fingerprints when necessary
+            crypto.subtle.digest('SHA-1', u.base64ToArrayBuffer(bundle['identity_key'])).then(fp => {
+              bundle['fingerprint'] = u.arrayBufferToHex(fp);
+              device.save('bundle', bundle);
+              device.trigger('change:bundle'); // Doesn't get triggered automatically due to pass-by-reference
+
               resolve();
             }).catch(reject);
           });
@@ -80354,6 +80361,67 @@ return __p
 
 /***/ }),
 
+/***/ "./src/templates/omemo_fingerprints.html":
+/*!***********************************************!*\
+  !*** ./src/templates/omemo_fingerprints.html ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
+module.exports = function(o) {
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<!-- src/templates/omemo_fingerprints.html -->\n<hr>\n<ul class="list-group fingerprints">\n    <li class="list-group-item active">' +
+__e(o.__('OMEMO Fingerprints')) +
+'</li>\n    ';
+ if (!o.devicelist.devices) { ;
+__p += '\n        <li class="list-group-item"><span class="spinner fa fa-spinner centered"/></li>\n    ';
+ } ;
+__p += '\n    ';
+ if (o.devicelist.devices) { ;
+__p += '\n        ';
+ o.devicelist.devices.each(function (device) { ;
+__p += '\n            ';
+ if (device.get('bundle') && device.get('bundle').fingerprint) { ;
+__p += '\n            <li class="list-group-item">\n                <form class="fingerprint-trust">\n                <span class="fingerprint">' +
+__e(device.get('bundle').fingerprint) +
+'</span>\n                <div class="btn-group btn-group-toggle">\n                    <label class="btn btn-primary btn--small" ';
+ if (device.get('trusted') != -1) { ;
+__p += ' active ';
+ } ;
+__p += '>\n                        <input type="radio" name="trust-' +
+__e(device.get('id')) +
+'" value="trusted"\n                            ';
+ if (device.get('trusted') != -1) { ;
+__p += ' checked ';
+ } ;
+__p += '>' +
+__e(o.__('Trusted')) +
+'\n                    </label>\n                    <label class="btn btn-secondary btn--small" ';
+ if (device.get('trusted') != -1) { ;
+__p += ' active ';
+ } ;
+__p += '>\n                        <input type="radio" name="trust-' +
+__e(device.get('id')) +
+'" value="untrusted"\n                            ';
+ if (device.get('trusted') == -1) { ;
+__p += ' checked ';
+ } ;
+__p += '>' +
+__e(o.__('Untrusted')) +
+'\n                    </label>\n                </div>\n                </form>\n            </li>\n            ';
+ } ;
+__p += '\n        ';
+ }); ;
+__p += '\n    ';
+ } ;
+__p += '\n</ul>\n';
+return __p
+};
+
+/***/ }),
+
 /***/ "./src/templates/pending_contact.html":
 /*!********************************************!*\
   !*** ./src/templates/pending_contact.html ***!
@@ -81442,55 +81510,7 @@ __e(o.__('Role')) +
 __e(o.role) +
 '</p>\n                ';
  } ;
-__p += '\n\n                ';
- if (o.has_omemo) { ;
-__p += '\n                    <hr>\n                    <ul class="list-group fingerprints">\n                        <li class="list-group-item active">' +
-__e(o.__('OMEMO Fingerprints')) +
-'</li>\n                        ';
- if (!o.devicelist.devices) { ;
-__p += '\n                            <li class="list-group-item"><span class="spinner fa fa-spinner centered"/></li>\n                        ';
- } ;
-__p += '\n                        ';
- if (o.devicelist.devices) { ;
-__p += '\n                            ';
- o.devicelist.devices.each(function (device) { ;
-__p += '\n                                ';
- if (device.get('bundle') && device.get('bundle').fingerprint) { ;
-__p += '\n                                <li class="list-group-item">\n                                    <form class="fingerprint-trust">\n                                    <span class="fingerprint">' +
-__e(device.get('bundle').fingerprint) +
-'</span>\n                                    <div class="btn-group btn-group-toggle">\n                                        <label class="btn btn-primary btn--small" ';
- if (device.get('trusted') != -1) { ;
-__p += ' active ';
- } ;
-__p += '>\n                                            <input type="radio" name="trust-' +
-__e(device.get('id')) +
-'" value="trusted"\n                                                ';
- if (device.get('trusted') != -1) { ;
-__p += ' checked ';
- } ;
-__p += '>' +
-__e(o.__('Trusted')) +
-'\n                                        </label>\n                                        <label class="btn btn-secondary btn--small" ';
- if (device.get('trusted') != -1) { ;
-__p += ' active ';
- } ;
-__p += '>\n                                            <input type="radio" name="trust-' +
-__e(device.get('id')) +
-'" value="untrusted"\n                                                ';
- if (device.get('trusted') == -1) { ;
-__p += ' checked ';
- } ;
-__p += '>' +
-__e(o.__('Untrusted')) +
-'\n                                        </label>\n                                    </div>\n                                    </form>\n                                </li>\n                                ';
- } ;
-__p += '\n                            ';
- }); ;
-__p += '\n                        ';
- } ;
-__p += '\n                    </ul>\n                ';
- } ;
-__p += '\n            </div>\n            <div class="modal-footer">\n                ';
+__p += '\n\n                <div data-subview="omemo_fingerprints"></div>\n            </div>\n            <div class="modal-footer">\n                ';
  if (o.allow_contact_removal && o.is_roster_contact) { ;
 __p += '\n                    <button type="button" class="btn btn-danger remove-contact"><i class="fa fa-trash"> </i>' +
 __e(o.__('Remove as contact')) +

@@ -26,6 +26,7 @@
             _converse.BootstrapModal = Backbone.VDOMView.extend({
 
                 initialize () {
+                    Backbone.VDOMView.prototype.initialize.apply(this, arguments);
                     this.render().insertIntoDOM();
                     this.modal = new bootstrap.Modal(this.el, {
                         backdrop: 'static',

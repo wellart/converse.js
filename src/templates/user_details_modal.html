@@ -28,36 +28,7 @@
                 <p><label>{{{o.__('Role')}}}:</label>&nbsp;{{{o.role}}}</p>
                 {[ } ]}
 
-                {[ if (o.has_omemo) { ]}
-                    <hr>
-                    <ul class="list-group fingerprints">
-                        <li class="list-group-item active">{{{o.__('OMEMO Fingerprints')}}}</li>
-                        {[ if (!o.devicelist.devices) { ]}
-                            <li class="list-group-item"><span class="spinner fa fa-spinner centered"/></li>
-                        {[ } ]}
-                        {[ if (o.devicelist.devices) { ]}
-                            {[ o.devicelist.devices.each(function (device) { ]}
-                                {[ if (device.get('bundle') && device.get('bundle').fingerprint) { ]}
-                                <li class="list-group-item">
-                                    <form class="fingerprint-trust">
-                                    <span class="fingerprint">{{{device.get('bundle').fingerprint}}}</span>
-                                    <div class="btn-group btn-group-toggle">
-                                        <label class="btn btn-primary btn--small" {[ if (device.get('trusted') != -1) { ]} active {[ } ]}>
-                                            <input type="radio" name="trust-{{{device.get('id')}}}" value="trusted"
-                                                {[ if (device.get('trusted') != -1) { ]} checked {[ } ]}>{{{o.__('Trusted')}}}
-                                        </label>
-                                        <label class="btn btn-secondary btn--small" {[ if (device.get('trusted') != -1) { ]} active {[ } ]}>
-                                            <input type="radio" name="trust-{{{device.get('id')}}}" value="untrusted"
-                                                {[ if (device.get('trusted') == -1) { ]} checked {[ } ]}>{{{o.__('Untrusted')}}}
-                                        </label>
-                                    </div>
-                                    </form>
-                                </li>
-                                {[ } ]}
-                            {[ }); ]}
-                        {[ } ]}
-                    </ul>
-                {[ } ]}
+                <div data-subview="omemo_fingerprints"></div>
             </div>
             <div class="modal-footer">
                 {[ if (o.allow_contact_removal && o.is_roster_contact) { ]}
