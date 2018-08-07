@@ -590,12 +590,21 @@
 
                     if (_.isNull(prev_msg_date) || moment(next_msg_date).isAfter(prev_msg_date, 'day')) {
                         const day_date = moment(next_msg_date).startOf('day');
-                        next_msg_el.insertAdjacentHTML('beforeBegin',
-                            tpl_new_day({
-                                'isodate': day_date.format(),
-                                'datestring': day_date.format("dddd MMM Do YYYY")
-                            })
-                        );
+                        if (u.hasClass('chat-state-notification', next_msg_el)) {
+                            next_msg_el.parentElement.insertAdjacentHTML('beforeBegin',
+                                tpl_new_day({
+                                    'isodate': day_date.format(),
+                                    'datestring': day_date.format("dddd MMM Do YYYY")
+                                })
+                            );
+                        } else {
+                            next_msg_el.insertAdjacentHTML('beforeBegin',
+                                tpl_new_day({
+                                    'isodate': day_date.format(),
+                                    'datestring': day_date.format("dddd MMM Do YYYY")
+                                })
+                            );
+                        }
                     }
                 },
 
@@ -682,14 +691,12 @@
                 },
 
                 clearChatStateNotification (message, isodate) {
-                    if (isodate) {
-                        _.each(
-                            sizzle(`.chat-state-notification[data-csn="${message.get('from')}"][data-isodate="${isodate}"]`, this.content),
-                            u.removeElement
-                        );
-                    } else {
-                        _.each(sizzle(`.chat-state-notification[data-csn="${message.get('from')}"]`, this.content), u.removeElement);
-                    }
+                    this.el.querySelector('.chat-state-notifications').innerHTML = '';
+                },
+
+                insertChatStateNotification (view) {
+                    const container = this.el.querySelector('.chat-state-notifications');
+                    container.insertAdjacentElement('afterbegin', view.el);
                 },
 
                 shouldShowOnTextMessage () {
@@ -710,7 +717,7 @@
                         }
                     }
                     const current_msg_date = moment(view.model.get('time')) || moment,
-                            previous_msg_date = this.getLastMessageDate(current_msg_date);
+                          previous_msg_date = this.getLastMessageDate(current_msg_date);
 
                     if (_.isNull(previous_msg_date)) {
                         this.content.insertAdjacentElement('afterbegin', view.el);
@@ -773,10 +780,13 @@
                      */
                     const view = new _converse.MessageView({'model': message});
                     this.clearChatStateNotification(message);
-                    this.insertMessage(view);
-                    this.insertDayIndicator(view.el);
-                    this.setScrollPosition(view.el);
-
+                    if (message.isOnlyChatStateNotification()) {
+                        this.insertChatStateNotification(view);
+                    } else {
+                        this.insertMessage(view);
+                        this.insertDayIndicator(view.el);
+                        this.setScrollPosition(view.el);
+                    }
                     if (u.isNewMessage(message)) {
                         if (message.get('sender') === 'me') {
                             // We remove the "scrolled" flag so that the chat area

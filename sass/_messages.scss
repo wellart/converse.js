@@ -1,5 +1,6 @@
 #conversejs {
     .message {
+        flex-shrink: 0;
 
         &.date-separator {
             height: 2em;
@@ -36,9 +37,6 @@
 
             &.badge {
                 color: $chat-head-text-color;
-            }
-            &.chat-state-notification {
-                font-style: italic;
             }
             &.chat-event {
                 clear: left;

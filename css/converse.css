@@ -7445,7 +7445,9 @@ body.reset {
     overflow-y: auto;
     border: 0;
     background-color: #ffffff;
-    line-height: 1.3em; }
+    line-height: 1.3em;
+    display: flex;
+    flex-direction: column; }
     #conversejs .chatbox .chat-content video {
       width: 100%; }
     #conversejs .chatbox .chat-content progress {
@@ -7507,7 +7509,7 @@ body.reset {
       margin: 0;
       padding: 0.25em;
       display: block;
-      border-top: 8px solid #3AA569;
+      border-top: 4px solid #3AA569;
       background-color: white;
       color: #3AA569; }
       #conversejs .chatbox .sendXMPPMessage .chat-toolbar .fa, #conversejs .chatbox .sendXMPPMessage .chat-toolbar .fa:hover {
@@ -8672,7 +8674,7 @@ body.reset {
   #conversejs.converse-embedded .chatroom .sendXMPPMessage .chat-toolbar,
   #conversejs .chatroom .sendXMPPMessage .chat-toolbar {
     background-color: white;
-    border-top: 8px solid #E77051;
+    border-top: 4px solid #E77051;
     color: #E77051; }
     #conversejs.converse-embedded .chatroom .sendXMPPMessage .chat-toolbar .fa, #conversejs.converse-embedded .chatroom .sendXMPPMessage .chat-toolbar .fa:hover,
     #conversejs .chatroom .sendXMPPMessage .chat-toolbar .fa,
@@ -8793,166 +8795,166 @@ body.reset {
   border: 1.2em solid #E7A151;
   border-top: 0.8em solid #E7A151; }
 
-#conversejs .message.date-separator {
-  height: 2em;
-  margin: 0;
-  position: relative;
-  text-align: center;
-  z-index: 0; }
-  #conversejs .message.date-separator .separator {
-    border: 0.5px solid #3AA569;
-    margin: 0 1em;
+#conversejs .message {
+  flex-shrink: 0; }
+  #conversejs .message.date-separator {
+    height: 2em;
+    margin: 0;
     position: relative;
-    top: 1em;
-    z-index: 5; }
-  #conversejs .message.date-separator .separator-text {
-    background: white;
-    bottom: 1px;
-    color: #555;
-    display: inline-block;
-    line-height: 2em;
-    padding: 0 1em;
-    position: relative;
-    z-index: 5; }
-#conversejs .message.chat-info {
-  color: #3AA569;
-  font-size: 14px;
-  line-height: 14px;
-  padding: 0.35rem 1rem; }
-  #conversejs .message.chat-info.badge {
-    color: white; }
-  #conversejs .message.chat-info.chat-state-notification {
-    font-style: italic; }
-  #conversejs .message.chat-info.chat-event {
-    clear: left;
-    font-style: italic; }
-  #conversejs .message.chat-info.chat-error {
-    color: #D24E2B;
-    font-weight: bold; }
-#conversejs .message .chat-image {
-  height: auto;
-  width: auto;
-  max-height: 15em;
-  max-width: 100%; }
-#conversejs .message.chat-msg--action {
-  font-style: italic; }
-#conversejs .message.chat-msg {
-  display: flex;
-  flex-direction: row;
-  overflow: auto;
-  padding: 0.25rem 1rem; }
-  #conversejs .message.chat-msg.onload {
-    animation: colorchange-chatmessage 1s;
-    -webkit-animation: colorchange-chatmessage 1s; }
-  #conversejs .message.chat-msg:hover {
-    background-color: rgba(0, 0, 0, 0.035); }
-    #conversejs .message.chat-msg:hover .chat-msg__actions .chat-msg__action {
-      opacity: 1; }
-  #conversejs .message.chat-msg.correcting.groupchat {
-    background-color: #fadfd7; }
-  #conversejs .message.chat-msg.correcting:not(.groupchat) {
-    background-color: #e7f7ee; }
-  #conversejs .message.chat-msg .spoiler {
-    margin-top: 0.5em; }
-  #conversejs .message.chat-msg .spoiler-hint {
-    margin-bottom: 0.5em; }
-  #conversejs .message.chat-msg .spoiler-toggle {
-    color: white; }
-    #conversejs .message.chat-msg .spoiler-toggle i {
-      color: white;
-      padding-right: 0.5em; }
-    #conversejs .message.chat-msg .spoiler-toggle:before {
-      padding-right: 0.25em;
-      whitespace: nowrap; }
-  #conversejs .message.chat-msg .chat-msg__content {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: stretch;
-    margin-left: 0.5rem;
-    width: 100%; }
-  #conversejs .message.chat-msg .chat-msg__content--action {
-    margin-left: 0; }
-  #conversejs .message.chat-msg .chat-msg__body {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 100%; }
-  #conversejs .message.chat-msg .chat-msg__message {
-    display: flex;
-    flex-direction: column;
-    width: 100%; }
-  #conversejs .message.chat-msg .chat-msg__edit-modal {
-    cursor: pointer;
-    padding-right: 0.5em; }
-  #conversejs .message.chat-msg.headline .chat-msg__body {
-    margin-left: 0; }
-  #conversejs .message.chat-msg .chat-msg__text {
-    padding: 0;
-    color: #555;
-    width: 100%; }
-    #conversejs .message.chat-msg .chat-msg__text a {
-      word-wrap: break-word;
-      word-break: break-all; }
-    #conversejs .message.chat-msg .chat-msg__text .emojione {
-      margin-bottom: -6px; }
-  #conversejs .message.chat-msg .chat-msg__media {
-    margin-top: 0.25rem;
-    word-break: break-all; }
-    #conversejs .message.chat-msg .chat-msg__media a {
-      word-wrap: break-word; }
-    #conversejs .message.chat-msg .chat-msg__media audio {
-      width: 100%; }
-  #conversejs .message.chat-msg .chat-msg__actions .chat-msg__action {
-    height: 14px;
+    text-align: center;
+    z-index: 0; }
+    #conversejs .message.date-separator .separator {
+      border: 0.5px solid #3AA569;
+      margin: 0 1em;
+      position: relative;
+      top: 1em;
+      z-index: 5; }
+    #conversejs .message.date-separator .separator-text {
+      background: white;
+      bottom: 1px;
+      color: #555;
+      display: inline-block;
+      line-height: 2em;
+      padding: 0 1em;
+      position: relative;
+      z-index: 5; }
+  #conversejs .message.chat-info {
+    color: #3AA569;
     font-size: 14px;
-    padding: 0;
-    border: none;
-    opacity: 0;
-    background: transparent;
-    cursor: pointer; }
-    #conversejs .message.chat-msg .chat-msg__actions .chat-msg__action:focus {
-      display: block; }
-  #conversejs .message.chat-msg .chat-msg__avatar {
-    margin-top: 0.5em;
-    height: 36px;
-    vertical-align: middle;
-    width: 36px; }
-  #conversejs .message.chat-msg .chat-msg__heading {
-    width: 100%;
-    margin-top: 0.5em;
-    padding-right: 0.25rem;
-    padding-bottom: 0.25rem;
-    display: block; }
-    #conversejs .message.chat-msg .chat-msg__heading .chat-msg__author {
-      white-space: nowrap;
-      font-family: "Century Gothic", futura, "URW Gothic L", Verdana, sans-serif;
-      font-size: 115%; }
-      #conversejs .message.chat-msg .chat-msg__heading .chat-msg__author .badge {
-        font-size: 80%;
-        font-family: "Helvetica", "Arial", sans-serif; }
-    #conversejs .message.chat-msg .chat-msg__heading .chat-msg__time {
-      padding-left: 0.25em;
-      color: #8c8c8c; }
-  #conversejs .message.chat-msg.chat-msg--action .chat-msg__content {
-    flex-wrap: wrap;
+    line-height: 14px;
+    padding: 0.35rem 1rem; }
+    #conversejs .message.chat-info.badge {
+      color: white; }
+    #conversejs .message.chat-info.chat-event {
+      clear: left;
+      font-style: italic; }
+    #conversejs .message.chat-info.chat-error {
+      color: #D24E2B;
+      font-weight: bold; }
+  #conversejs .message .chat-image {
+    height: auto;
+    width: auto;
+    max-height: 15em;
+    max-width: 100%; }
+  #conversejs .message.chat-msg--action {
+    font-style: italic; }
+  #conversejs .message.chat-msg {
+    display: flex;
     flex-direction: row;
-    justify-content: flex-start; }
-  #conversejs .message.chat-msg.chat-msg--action .chat-msg__text {
-    width: auto; }
-  #conversejs .message.chat-msg.chat-msg--action .chat-msg__heading {
-    margin-top: 0;
-    padding-bottom: 0;
-    width: auto; }
-  #conversejs .message.chat-msg.chat-msg--action .chat-msg__author {
-    font-size: 14px; }
-  #conversejs .message.chat-msg.chat-msg--action .chat-msg__time {
-    margin-left: 0; }
-  #conversejs .message.chat-msg.chat-msg--followup .chat-msg__heading,
-  #conversejs .message.chat-msg.chat-msg--followup .chat-msg__avatar {
-    display: none; }
-  #conversejs .message.chat-msg.chat-msg--followup .chat-msg__content {
-    margin-left: 2.75rem; }
+    overflow: auto;
+    padding: 0.25rem 1rem; }
+    #conversejs .message.chat-msg.onload {
+      animation: colorchange-chatmessage 1s;
+      -webkit-animation: colorchange-chatmessage 1s; }
+    #conversejs .message.chat-msg:hover {
+      background-color: rgba(0, 0, 0, 0.035); }
+      #conversejs .message.chat-msg:hover .chat-msg__actions .chat-msg__action {
+        opacity: 1; }
+    #conversejs .message.chat-msg.correcting.groupchat {
+      background-color: #fadfd7; }
+    #conversejs .message.chat-msg.correcting:not(.groupchat) {
+      background-color: #e7f7ee; }
+    #conversejs .message.chat-msg .spoiler {
+      margin-top: 0.5em; }
+    #conversejs .message.chat-msg .spoiler-hint {
+      margin-bottom: 0.5em; }
+    #conversejs .message.chat-msg .spoiler-toggle {
+      color: white; }
+      #conversejs .message.chat-msg .spoiler-toggle i {
+        color: white;
+        padding-right: 0.5em; }
+      #conversejs .message.chat-msg .spoiler-toggle:before {
+        padding-right: 0.25em;
+        whitespace: nowrap; }
+    #conversejs .message.chat-msg .chat-msg__content {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: stretch;
+      margin-left: 0.5rem;
+      width: 100%; }
+    #conversejs .message.chat-msg .chat-msg__content--action {
+      margin-left: 0; }
+    #conversejs .message.chat-msg .chat-msg__body {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      width: 100%; }
+    #conversejs .message.chat-msg .chat-msg__message {
+      display: flex;
+      flex-direction: column;
+      width: 100%; }
+    #conversejs .message.chat-msg .chat-msg__edit-modal {
+      cursor: pointer;
+      padding-right: 0.5em; }
+    #conversejs .message.chat-msg.headline .chat-msg__body {
+      margin-left: 0; }
+    #conversejs .message.chat-msg .chat-msg__text {
+      padding: 0;
+      color: #555;
+      width: 100%; }
+      #conversejs .message.chat-msg .chat-msg__text a {
+        word-wrap: break-word;
+        word-break: break-all; }
+      #conversejs .message.chat-msg .chat-msg__text .emojione {
+        margin-bottom: -6px; }
+    #conversejs .message.chat-msg .chat-msg__media {
+      margin-top: 0.25rem;
+      word-break: break-all; }
+      #conversejs .message.chat-msg .chat-msg__media a {
+        word-wrap: break-word; }
+      #conversejs .message.chat-msg .chat-msg__media audio {
+        width: 100%; }
+    #conversejs .message.chat-msg .chat-msg__actions .chat-msg__action {
+      height: 14px;
+      font-size: 14px;
+      padding: 0;
+      border: none;
+      opacity: 0;
+      background: transparent;
+      cursor: pointer; }
+      #conversejs .message.chat-msg .chat-msg__actions .chat-msg__action:focus {
+        display: block; }
+    #conversejs .message.chat-msg .chat-msg__avatar {
+      margin-top: 0.5em;
+      height: 36px;
+      vertical-align: middle;
+      width: 36px; }
+    #conversejs .message.chat-msg .chat-msg__heading {
+      width: 100%;
+      margin-top: 0.5em;
+      padding-right: 0.25rem;
+      padding-bottom: 0.25rem;
+      display: block; }
+      #conversejs .message.chat-msg .chat-msg__heading .chat-msg__author {
+        white-space: nowrap;
+        font-family: "Century Gothic", futura, "URW Gothic L", Verdana, sans-serif;
+        font-size: 115%; }
+        #conversejs .message.chat-msg .chat-msg__heading .chat-msg__author .badge {
+          font-size: 80%;
+          font-family: "Helvetica", "Arial", sans-serif; }
+      #conversejs .message.chat-msg .chat-msg__heading .chat-msg__time {
+        padding-left: 0.25em;
+        color: #8c8c8c; }
+    #conversejs .message.chat-msg.chat-msg--action .chat-msg__content {
+      flex-wrap: wrap;
+      flex-direction: row;
+      justify-content: flex-start; }
+    #conversejs .message.chat-msg.chat-msg--action .chat-msg__text {
+      width: auto; }
+    #conversejs .message.chat-msg.chat-msg--action .chat-msg__heading {
+      margin-top: 0;
+      padding-bottom: 0;
+      width: auto; }
+    #conversejs .message.chat-msg.chat-msg--action .chat-msg__author {
+      font-size: 14px; }
+    #conversejs .message.chat-msg.chat-msg--action .chat-msg__time {
+      margin-left: 0; }
+    #conversejs .message.chat-msg.chat-msg--followup .chat-msg__heading,
+    #conversejs .message.chat-msg.chat-msg--followup .chat-msg__avatar {
+      display: none; }
+    #conversejs .message.chat-msg.chat-msg--followup .chat-msg__content {
+      margin-left: 2.75rem; }
 #conversejs .chatroom-body .message.onload {
   animation: colorchange-chatmessage-muc 1s;
   -webkit-animation: colorchange-chatmessage-muc 1s; }
@@ -8965,6 +8967,14 @@ body.reset {
 @media screen and (max-width: 767px) {
   #conversejs:not(.converse-embedded) .message.chat-msg .chat-msg__author {
     white-space: normal; } }
+#conversejs .chat-state-notifications {
+  flex-basis: 1.8em;
+  flex-shrink: 0;
+  height: 1.8em;
+  background-color: white; }
+#conversejs .message .chat-info.chat-state-notification {
+  font-style: italic; }
+
 #conversejs.converse-overlayed #minimized-chats {
   order: 100;
   width: 130px;

@@ -69970,10 +69970,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           if (_.isNull(prev_msg_date) || moment(next_msg_date).isAfter(prev_msg_date, 'day')) {
             const day_date = moment(next_msg_date).startOf('day');
-            next_msg_el.insertAdjacentHTML('beforeBegin', tpl_new_day({
-              'isodate': day_date.format(),
-              'datestring': day_date.format("dddd MMM Do YYYY")
-            }));
+
+            if (u.hasClass('chat-state-notification', next_msg_el)) {
+              next_msg_el.parentElement.insertAdjacentHTML('beforeBegin', tpl_new_day({
+                'isodate': day_date.format(),
+                'datestring': day_date.format("dddd MMM Do YYYY")
+              }));
+            } else {
+              next_msg_el.insertAdjacentHTML('beforeBegin', tpl_new_day({
+                'isodate': day_date.format(),
+                'datestring': day_date.format("dddd MMM Do YYYY")
+              }));
+            }
           }
         },
 
@@ -70068,11 +70076,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         clearChatStateNotification(message, isodate) {
-          if (isodate) {
-            _.each(sizzle(`.chat-state-notification[data-csn="${message.get('from')}"][data-isodate="${isodate}"]`, this.content), u.removeElement);
-          } else {
-            _.each(sizzle(`.chat-state-notification[data-csn="${message.get('from')}"]`, this.content), u.removeElement);
-          }
+          this.el.querySelector('.chat-state-notifications').innerHTML = '';
+        },
+
+        insertChatStateNotification(view) {
+          const container = this.el.querySelector('.chat-state-notifications');
+          container.insertAdjacentElement('afterbegin', view.el);
         },
 
         shouldShowOnTextMessage() {
@@ -70159,9 +70168,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'model': message
           });
           this.clearChatStateNotification(message);
-          this.insertMessage(view);
-          this.insertDayIndicator(view.el);
-          this.setScrollPosition(view.el);
+
+          if (message.isOnlyChatStateNotification()) {
+            this.insertChatStateNotification(view);
+          } else {
+            this.insertMessage(view);
+            this.insertDayIndicator(view.el);
+            this.setScrollPosition(view.el);
+          }
 
           if (u.isNewMessage(message)) {
             if (message.get('sender') === 'me') {
@@ -76257,6 +76271,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.el.innerHTML = tpl_chatroom();
           this.renderHeading();
           this.renderChatArea();
+          this.renderMessageForm();
 
           if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
             this.showSpinner();
@@ -76276,14 +76291,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           if (_.isNull(this.el.querySelector('.chat-area'))) {
             const container_el = this.el.querySelector('.chatroom-body');
             container_el.insertAdjacentHTML('beforeend', tpl_chatarea({
-              'label_message': __('Message'),
-              'label_send': __('Send'),
-              'show_send_button': _converse.show_send_button,
-              'show_toolbar': _converse.show_toolbar,
-              'unread_msgs': __('You have unread messages')
+              'show_send_button': _converse.show_send_button
             }));
             container_el.insertAdjacentElement('beforeend', this.occupantsview.el);
-            this.renderToolbar(tpl_chatroom_toolbar);
             this.content = this.el.querySelector('.chat-content');
             this.toggleOccupants(null, true);
           }
@@ -84346,31 +84356,13 @@ return __p
 
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+var __t, __p = '', __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/chatarea.html -->\n<div class="chat-area col">\n    <div class="chat-content ';
  if (o.show_send_button) { ;
 __p += 'chat-content-sendbutton';
  } ;
-__p += '"></div>\n    <div class="new-msgs-indicator hidden">▼ ' +
-__e( o.unread_msgs ) +
-' ▼</div>\n    <form class="sendXMPPMessage">\n        ';
- if (o.show_toolbar) { ;
-__p += '\n            <ul class="chat-toolbar no-text-select"></ul>\n        ';
- } ;
-__p += '\n        <textarea type="text" class="chat-textarea ';
- if (o.show_send_button) { ;
-__p += 'chat-textarea-send-button';
- } ;
-__p += '"\n                  placeholder="' +
-__e(o.label_message) +
-'"></textarea>\n    ';
- if (o.show_send_button) { ;
-__p += '\n        <button type="submit" class="pure-button send-button">' +
-__e( o.label_send ) +
-'</button>\n    ';
- } ;
-__p += '\n    </form>\n</div>\n';
+__p += '"></div>\n    <div class="message-form-container"/>\n</div>\n';
 return __p
 };
 
@@ -84391,7 +84383,7 @@ __p += '<!-- src/templates/chatbox.html -->\n<div class="flyout box-flyout">\n  
  if (o.show_send_button) { ;
 __p += 'chat-content-sendbutton';
  } ;
-__p += '"></div>\n        <div class="message-form-container"/>\n    </div>\n</div>\n';
+__p += '"></div>\n        <div class="chat-state-notifications"></div>\n        <div class="message-form-container"/>\n    </div>\n</div>\n';
 return __p
 };
 
