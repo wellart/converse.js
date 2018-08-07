@@ -70191,7 +70191,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.showMessage(message);
 
           if (message.get('correcting')) {
-            this.insertIntoTextArea(message.get('message'), true);
+            this.insertIntoTextArea(message.get('message'), true, true);
           }
 
           _converse.emit('messageAdded', {
@@ -70332,10 +70332,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             }
 
             message.save('correcting', true);
-            this.insertIntoTextArea(message.get('message'), true);
+            this.insertIntoTextArea(message.get('message'), true, true);
           } else {
             message.save('correcting', false);
-            this.insertIntoTextArea('', true);
+            this.insertIntoTextArea('', true, false);
           }
         },
 
@@ -70358,10 +70358,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           if (message) {
-            this.insertIntoTextArea(message.get('message'), true);
+            this.insertIntoTextArea(message.get('message'), true, true);
             message.save('correcting', true);
           } else {
-            this.insertIntoTextArea('', true);
+            this.insertIntoTextArea('', true, false);
           }
         },
 
@@ -70386,7 +70386,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           message = message || this.getOwnMessages().findLast(msg => msg.get('message'));
 
           if (message) {
-            this.insertIntoTextArea(message.get('message'), true);
+            this.insertIntoTextArea(message.get('message'), true, true);
             message.save('correcting', true);
           }
         },
@@ -70414,10 +70414,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return this;
         },
 
-        insertIntoTextArea(value, replace = false) {
+        insertIntoTextArea(value, replace = false, correcting = false) {
           const textarea = this.el.querySelector('.chat-textarea');
 
+          if (correcting) {
+            u.addClass('correcting', textarea);
+          } else {
+            u.removeClass('correcting', textarea);
+          }
+
           if (replace) {
+            textarea.value = '';
             textarea.value = value;
           } else {
             let existing = textarea.value;
@@ -70426,10 +70433,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               existing = existing + ' ';
             }
 
+            textarea.value = '';
             textarea.value = existing + value + ' ';
           }
 
-          textarea.focus();
+          u.putCurserAtEnd(textarea);
         },
 
         createEmojiPicker() {
@@ -75823,11 +75831,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
       _converse.api.settings.update({
-        auto_list_rooms: false,
-        hide_muc_server: false,
+        'auto_list_rooms': false,
+        'hide_muc_server': false,
         // TODO: no longer implemented...
-        muc_disable_moderator_commands: false,
-        visible_toolbar_buttons: {
+        'muc_disable_moderator_commands': false,
+        'visible_toolbar_buttons': {
           'toggle_occupants': true
         }
       });
@@ -76142,6 +76150,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         openChatRoom(ev) {
           ev.preventDefault();
           const data = this.parseRoomDataFromEvent(ev.target);
+
+          if (data.nick === "") {
+            // Make sure defaults apply if no nick is provided.
+            data.nick = undefined;
+          }
 
           _converse.api.rooms.open(data.jid, data);
 
@@ -77841,7 +77854,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'affiliation': null,
             'connection_status': converse.ROOMSTATUS.DISCONNECTED,
             'name': '',
-            'nick': _converse.xmppstatus.get('nickname'),
+            'nick': _converse.xmppstatus.get('nickname') || _converse.nickname,
             'description': '',
             'features_fetched': false,
             'roomconfig': {},
@@ -88036,6 +88049,20 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }
 
     return result;
+  };
+
+  u.putCurserAtEnd = function (textarea) {
+    if (textarea !== document.activeElement) {
+      textarea.focus();
+    } // Double the length because Opera is inconsistent about whether a carriage return is one character or two.
+
+
+    const len = textarea.value.length * 2; // Timeout seems to be required for Blink
+
+    setTimeout(() => textarea.setSelectionRange(len, len), 1); // Scroll to the bottom, in case we're in a tall textarea
+    // (Necessary for Firefox and Chrome)
+
+    this.scrollTop = 999999;
   };
 
   u.getUniqueId = function () {
