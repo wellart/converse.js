@@ -1247,23 +1247,18 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
-            hideChatRoomContents () {
-                const container_el = this.el.querySelector('.chatroom-body');
-                if (!_.isNull(container_el)) {
-                    _.each(container_el.children, (child) => { child.classList.add('hidden'); });
-                }
-            },
-
             renderNicknameForm (message) {
                 /* Render a form which allows the user to choose their
                  * nickname.
                  */
-                this.hideChatRoomContents();
+                this.el.querySelector('.chat-area').classList.remove('hidden');
+                this.el.querySelector('.occupants').classList.remove('hidden');
+                this.el.querySelector('.sendXMPPMessage').classList.add('hidden');
                 _.each(this.el.querySelectorAll('span.centered.spinner'), u.removeElement);
                 if (!_.isString(message)) {
                     message = '';
                 }
-                const container_el = this.el.querySelector('.chatroom-body');
+                const container_el = this.el.querySelector('.message-form-container');
                 container_el.insertAdjacentHTML(
                     'beforeend',
                     tpl_chatroom_nickname_form({
@@ -1689,6 +1684,7 @@ converse.plugins.add('converse-muc-views', {
                 } else if (this.model.get('connection_status') == converse.ROOMSTATUS.PASSWORD_REQUIRED) {
                     this.renderPasswordForm();
                 } else {
+                    this.el.querySelector('.sendXMPPMessage').classList.remove('hidden');
                     this.el.querySelector('.chat-area').classList.remove('hidden');
                     this.setOccupantsVisibility();
                     this.scrollDown();
