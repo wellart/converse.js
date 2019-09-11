@@ -26,10 +26,10 @@ module.exports = merge(common, {
                 {
                     loader: 'sass-loader',
                     options: {
-                        includePaths: [
-                            path.resolve(__dirname, 'node_modules/')
-                        ],
-                        sourceMap: true
+                        sassOptions: {
+                            includePaths: [path.resolve(__dirname, '../node_modules/')],
+                            sourceMap: true
+                        }
                     }
                 }
             ]

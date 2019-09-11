@@ -7,7 +7,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 module.exports = merge(common, {
     entry: "@converse/headless/headless.js",
     output: {
-        path: path.resolve(__dirname, 'src/headless/dist'), // Output path for generated bundles
+        path: path.resolve(__dirname, '../src/headless/dist'), // Output path for generated bundles
         filename: 'converse-headless.min.js',
         chunkFilename: '[name].js'
     },

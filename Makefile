@@ -66,7 +66,7 @@ serve_bg: stamp-npm
 ########################################################################
 ## Translation machinery
 
-dist/converse-no-dependencies.js: src webpack.common.js webpack.nodeps.js stamp-npm @converse/headless
+dist/converse-no-dependencies.js: src ./webpack/webpack.common.js ./webpack/webpack.nodeps.js stamp-npm @converse/headless
 	npm run nodeps
 
 GETTEXT = $(XGETTEXT) --from-code=UTF-8 --language=JavaScript --keyword=__ -keyword=___ --force-po --output=locale/converse.pot --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=5.0.1 dist/converse-no-dependencies.js -c
@@ -171,7 +171,7 @@ BUILDS = src/headless/dist/converse-headless.min.js
 
 @converse/headless: src/headless
 
-src/headless/dist/converse-headless.min.js: src webpack.common.js stamp-npm @converse/headless
+src/headless/dist/converse-headless.min.js: src ./webpack/webpack.common.js stamp-npm @converse/headless
 	npm run converse-headless.min.js
 
 
