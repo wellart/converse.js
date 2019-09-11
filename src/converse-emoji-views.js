@@ -14,6 +14,7 @@ import BrowserStorage from "backbone.browserStorage";
 import bootstrap from "bootstrap.native";
 import tpl_emoji_button from "templates/emoji_button.html";
 import tpl_emojis from "templates/emojis.html";
+import DOMNavigator from "./dom-navigator";
 
 const { Backbone, sizzle, _ } = converse.env;
 const u = converse.env.utils;
@@ -143,7 +144,8 @@ converse.plugins.add('converse-emoji-views', {
                 'click .emoji-picker__header li.emoji-category': 'chooseCategory',
                 'click .emoji-skintone-picker li.emoji-skintone': 'chooseSkinTone',
                 'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
-                'keydown .emoji-search': 'onKeyDown'
+                'keydown .emoji-search': 'onKeyDown',
+                'focus .emoji-search': 'disableArrowNavigation'
             },
 
             async initialize () {
@@ -179,6 +181,22 @@ converse.plugins.add('converse-emoji-views', {
 
             afterRender () {
                 this.initIntersectionObserver();
+                this.initArrowNavigation();
+            },
+
+            initArrowNavigation () {
+                this.navigators = this.navigators || [];
+                this.navigators.forEach(n => n.destroy());
+                this.navigators = Array.from(this.el.querySelectorAll('.emoji-picker__lists ul')).map(ul => new DOMNavigator(ul));
+            },
+
+            disableArrowNavigation () {
+                this.navigators = this.navigators || [];
+                this.navigators.forEach(n => n.disable());
+            },
+
+            getNavigatorForList (ul) {
+                return this.navigators.find(n => n.container.isSameNode(ul));
             },
 
             filter (value, set_property) {
@@ -249,7 +267,17 @@ converse.plugins.add('converse-emoji-views', {
             },
 
             onKeyDown (ev) {
-                if (ev.keyCode === _converse.keycodes.TAB) {
+                if (ev.keyCode === _converse.keycodes.DOWN_ARROW) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    ev.target.blur();
+                    this.navigators.forEach(n => n.enable());
+                    const first_emoji = this.el.querySelector('.insert-emoji');
+                    const container = first_emoji && first_emoji.parentElement;
+                    const navigator = this.getNavigatorForList(container);
+                    navigator.enable();
+                    navigator.select(first_emoji, 'down');
+                } else if (ev.keyCode === _converse.keycodes.TAB) {
                     ev.preventDefault();
                     const match = find(_converse.emoji_shortnames, sn => _converse.FILTER_CONTAINS(sn, ev.target.value));
                     if (match) {

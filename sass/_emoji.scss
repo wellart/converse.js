@@ -62,7 +62,9 @@
                             margin: 0;
                             height: 32px;
                             width: 32px;
-
+                            &.selected {
+                                background-color: var(--highlight-color);
+                            }
                             &.picked {
                                 background-color: var(--highlight-color);
                             }
