@@ -27,32 +27,32 @@ msgstr ""
 #: dist/converse-no-dependencies.js:8008
 #, fuzzy
 msgid "This message has been edited"
-msgstr "Pengguna ini adalah moderator"
+msgstr "Pesan ini telah di edit"
 
 #: dist/converse-no-dependencies.js:8014
 #, fuzzy
 msgid "Edit this message"
-msgstr "Tampilkan menu ini"
+msgstr "Edit pesan ini"
 
 #: dist/converse-no-dependencies.js:8030
 #, fuzzy
 msgid "Message versions"
-msgstr "Pesan"
+msgstr "Versi Pesan"
 
 #: dist/converse-no-dependencies.js:8044 dist/converse-no-dependencies.js:8321
 #: dist/converse-no-dependencies.js:8435 dist/converse-no-dependencies.js:9009
 #: dist/converse-no-dependencies.js:49890
 #: dist/converse-no-dependencies.js:49979
 msgid "Close"
-msgstr ""
+msgstr "Tutup"
 
 #: dist/converse-no-dependencies.js:8325
 msgid "The User's Profile Image"
-msgstr ""
+msgstr "Gambar profil pengguna"
 
 #: dist/converse-no-dependencies.js:8335
 msgid "Full Name:"
-msgstr ""
+msgstr "Nama Lengkap"
 
 #: dist/converse-no-dependencies.js:8341 dist/converse-no-dependencies.js:8517
 msgid "XMPP Address:"
